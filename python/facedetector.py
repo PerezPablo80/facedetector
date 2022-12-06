@@ -1,15 +1,17 @@
 from statistics import harmonic_mean
 import cv2
-import os
 import numpy as np
 import face_recognition
 import datetime as dt
 from datetime import datetime, timedelta
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 #import images:
-pathQuery = 'ImagesQuery'
-pathDetected = 'ImagesDetected'
-cascadeDetector = 'haarcascade_frontalface_default.xml'
+pathQuery = os.getenv("QUERY_IMAGES")
+pathDetected = os.getenv("DETECTED_IMAGES")
+cascadeDetector = os.getenv("FACE_CASCADE_DETECTOR")
 
 def loadImagesAndEncode(path):
     known_face_encoding = []
@@ -45,11 +47,9 @@ def detectFace(frame,known_face_encoding,known_face_names):
             face_distances = face_recognition.face_distance(known_face_encoding,face_encoding)
             # best_match_index = np.argmin(face_distances)
             if len(matches)>0:
-                print(matches)
                 try:
                     first_match_index = matches.index(True)
                     name = known_face_names[first_match_index]
-                    print(' first match index:',first_match_index)
                 except:
                     first_match_index= -1
             face_names.append(name)
@@ -65,7 +65,6 @@ def detectFace(frame,known_face_encoding,known_face_names):
     cv2.imshow("Video",frame)
         # saveImage(frame)
         
-
 def saveImage(frame):
     now = dt.datetime.now()
     aux = now.strftime("%Y%m%d%H%M%S")
@@ -106,16 +105,16 @@ def videoCapture(everyAmount):
                 # proceso las caras de nuevo.
                 known_faces,known_names = loadImagesAndEncode(pathDetected) 
 
-        key = cv2.waitKey(1) & 0xFF 
+        key = cv2.waitKey(1) & 0xFF #saca la tecla digitada.
         if key == ord('s'):
             print("Guardo imagen")
             saveImage(frame)
         if key == ord('q'):
             break
-        # cv2.imshow("V",frame)
 
 video_capture = cv2.VideoCapture(0)
 detector = cv2.CascadeClassifier(cascadeDetector)
-videoCapture(10)
+checkEveryNFrames = int(os.getenv("CHECK_EVERY_N_FRAMES"))
+videoCapture(checkEveryNFrames)
 video_capture.release()
 cv2.destroyAllWindows()
