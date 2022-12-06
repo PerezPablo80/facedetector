@@ -16,8 +16,11 @@ exports.createRoutes = function(app){
         }
         res.send({message:"Should send something",body:req.body})
     });
-    app.post('/hola',function(req,res){
+    app.put('/file',function(req,res){
         console.log(req.body);
-        res.send({msg:'paciencia'})
+        if(file.update(req.body.oldName,req.body.newName))
+            res.send({msg:'actualiza'})
+        else
+        res.send({msg:'NO actualiza'})
     })
 }

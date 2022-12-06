@@ -24,6 +24,15 @@ class File{
             return false;
         }
     }
+    async update(filename,newName){
+     fs.rename(this.folder+filename,this.folder+newName,function(err){
+        if(err) {
+            console.log('error updating::',err)
+            return false;
+        }
+        return true;
+     })   
+    }
 }
 
 module.exports = File;
