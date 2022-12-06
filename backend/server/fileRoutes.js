@@ -2,8 +2,11 @@
 const File = require('./file')
 exports.createRoutes = function(app){
     const file=new File();
-    app.get('/file',function(req,res){
-        res.send({message:"Should send file list"})
+    app.get('/file',async function(req,res){
+        let lst=await file.list();
+        let rta={lst:lst,message:"Should send file list"};
+        console.log(rta)
+        res.send(rta)
     });
 
     app.post('/file',async function(req,res){
