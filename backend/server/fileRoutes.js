@@ -7,16 +7,10 @@ exports.createRoutes = function(app){
     });
 
     app.post('/file',async function(req,res){
-        console.log("req.file")
-        console.log(req.file)
-        console.log("req.files")
-        console.log(req.files)
-        console.log("req.body")
-        console.log(req.body)
-        console.log('--------')
-        // if(req.files){
-        //     file.create(req.files,req.body)
-        // }
+        
+        if(req.files){
+            file.create(req.files,req.body)
+        }
         res.send({message:"Should send something",body:req.body})
     });
     app.post('/hola',function(req,res){
