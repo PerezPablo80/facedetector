@@ -29,12 +29,14 @@ class File{
     async create(files,body){
         try{
             var ext =files.file.name.split('.')[1];
-            let name=ext?ext:'';
-            name =files.file.name+name;
+            let name=files.file.name;
             files.file.mv(this.folder+name);
             return {status:true,message:'Creacion correcta'};
         }catch(e){
+            console.log("ERRRORRRR en create")
+            console.log(e)
             return {status:false,message:'Creacion incorrecta'};
+            
         }
     }
     async update(filename,newName){
