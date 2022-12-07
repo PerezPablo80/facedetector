@@ -11,7 +11,20 @@ class File{
         files.forEach((file)=>{
             lst.push(file)
         })
-        return lst;
+        return {status:true,list:lst};
+    }
+    async emptyFolder(){
+        const files = fs.readdirSync(this.folder);
+        try{
+            files.forEach((file)=>{
+                fs.unlink(this.folder+file,(err)=>{
+                    if(err) console.log(`error with file ${file} and error:${err}`)
+                })
+            })
+            return {status:true,message:'empty ok'}    
+        }catch(e){
+            return {status:false,message:e}
+        }
     }
     async create(files,body){
         try{
@@ -19,9 +32,9 @@ class File{
             let name=ext?ext:'';
             name =files.file.name+name;
             files.file.mv(this.folder+name);
-            return true;
+            return {status:true,message:'Creacion correcta'};
         }catch(e){
-            return false;
+            return {status:false,message:'Creacion incorrecta'};
         }
     }
     async update(filename,newName){
