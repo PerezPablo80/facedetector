@@ -143,7 +143,7 @@ def assignNewName(fl, frame, known_faces, known_names):
         cv2.imshow('Video', frame)
 
 
-def videoCapture(everyAmount):
+def videoCapture(everyAmount, video_capture):
     process_frame = 0
     delta = datetime.now() + timedelta(minutes=1)
     known_faces, known_names = loadImagesAndEncode(pathDetected)
@@ -165,9 +165,10 @@ def videoCapture(everyAmount):
             break
 
 
-video_capture = cv2.VideoCapture(0)
-detector = cv2.CascadeClassifier(cascadeDetector)
-checkEveryNFrames = int(os.getenv("CHECK_EVERY_N_FRAMES"))
-videoCapture(checkEveryNFrames)
-video_capture.release()
-cv2.destroyAllWindows()
+def init():
+    video_capture = cv2.VideoCapture(0)
+    detector = cv2.CascadeClassifier(cascadeDetector)
+    checkEveryNFrames = int(os.getenv("CHECK_EVERY_N_FRAMES"))
+    videoCapture(checkEveryNFrames, video_capture)
+    video_capture.release()
+    cv2.destroyAllWindows()
