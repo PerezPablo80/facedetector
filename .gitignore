@@ -5,6 +5,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+__py*
+python/__pycache__
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -38,7 +40,9 @@ bower_components
 build/Release
 
 # Dependency directories
+frontend/node_modules/
 node_modules/
+__pycache__/
 jspm_packages/
 
 # TypeScript v1 declaration files
