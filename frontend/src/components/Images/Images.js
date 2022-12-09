@@ -13,14 +13,18 @@ class Image extends React.Component{
         }
     }
     componentDidMount(){
+        let url=""
         axios.get(url).then((res)=>{
 
         }).catch((e)=>{
 
         })
     }
-    imageCards(){}
+    imageCards(){
+        return <>Hola</>
+    }
     render(){
-        {this.state.hasData?this.imageCards(): <h1>Cargando</h1>}
+        {return this.state.hasData?this.imageCards(): <h1>Cargando</h1>}
     }
 }
+export default Image;
