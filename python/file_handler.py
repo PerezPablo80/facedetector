@@ -21,7 +21,7 @@ def listFiles(folder):
         # load images and encode names with data
         for fl in myList:
             lista.append(fl)
-        return {"status": "true", "lista": lista}
+        return {"status": "true", "images": lista}
     except Exception as e:
         return {"status": "false", "message": "exception found", "error": e}
 

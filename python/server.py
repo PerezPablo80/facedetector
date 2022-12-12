@@ -1,13 +1,15 @@
 import os
 import threading
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, send_file
 import facedetector
+from flask_cors import CORS
 import file_handler
 load_dotenv()
 # test= os.getenv("TEST")
 
 app = Flask(__name__)
+cors = CORS(app)
 previousFolder = os.getenv("QUERY_IMAGES")
 actualFolder = os.getenv("DETECTED_IMAGES")
 
@@ -17,10 +19,33 @@ def init():
     return {"Status": "true", "message": " all ok"}
 
 
+@app.route('/static/<name>', methods=['GET'])
+@app.route('/static/', methods=['GET'])
+@app.route('/static', methods=['GET'])
+def fileAccess(name=""):
+    if len(name) > 0:
+        if name.startswith("aa_"):
+            filename = previousFolder+"/"+name
+        else:
+            filename = actualFolder+"/"+name
+        if os.path.isfile(filename):
+            return send_file(filename)
+        return "<h1>No file found</h1>"
+    else:
+        return "<h1>NO FILE REQUESTED</h1>"
+
+
+@app.route('/file/<folder>', methods=['PUT', 'GET'])
+@app.route('/file/', methods=['PUT', 'GET'])
 @app.route('/file', methods=['PUT', 'GET'])
-def actions():
+def actions(folder=""):
     if request.method == 'GET':
-        return file_handler.listFiles(actualFolder)
+        fileType = folder
+        # args.get("type", default="recognized")
+        if fileType == "unknown":
+            return file_handler.listFiles(previousFolder)
+        else:
+            return file_handler.listFiles(actualFolder)
     elif request.method == 'PUT':
         previousFile = previousFolder+"/"+request.json['previousName']
         actualFile = actualFolder+"/"+request.json['actualName']
@@ -52,7 +77,7 @@ def fcinit():
 
 
 def serverStart():
-    app.run(port=2999)
+    app.run(host="0.0.0.0", port=2999)
     # app.run(host='0.0.0.0',port=4434)
     # app.run()
 

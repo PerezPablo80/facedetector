@@ -113,7 +113,7 @@ def sendImage(filename):
 def saveImage(frame, known_faces, known_names):
     ext = '.png'
     now = dt.datetime.now()
-    aux = now.strftime("%Y%m%d%H%M%S")
+    aux = "aa_"+now.strftime("%Y%m%d%H%M%S")
     if not checkDetection(frame, known_faces, known_names):
         print("Guardo imagen")
         cv2.imwrite(f'{pathQuery}/{aux}{ext}', frame)
