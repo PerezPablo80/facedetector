@@ -35,21 +35,29 @@ def fileAccess(name=""):
         return "<h1>NO FILE REQUESTED</h1>"
 
 
+def fileExist(file):
+    return os.path.isfile(file)
+
+
 @app.route('/file/<folder>', methods=['PUT', 'GET'])
 @app.route('/file/', methods=['PUT', 'GET'])
 @app.route('/file', methods=['PUT', 'GET'])
 def actions(folder=""):
     if request.method == 'GET':
         fileType = folder
-        # args.get("type", default="recognized")
-        if fileType == "unknown":
+        if fileType == "Desconocidos":
             return file_handler.listFiles(previousFolder)
         else:
             return file_handler.listFiles(actualFolder)
     elif request.method == 'PUT':
         previousFile = previousFolder+"/"+request.json['previousName']
         actualFile = actualFolder+"/"+request.json['actualName']
-        return file_handler.update(previousFile, actualFile)
+        if (fileExist(previousFile) and not fileExist(actualFile)):
+            return file_handler.update(previousFile, actualFile)
+        else:
+            previousFile = actualFolder+"/"+request.json['previousName']
+            actualFile = actualFolder+"/"+request.json['actualName']
+            return file_handler.update(previousFile, actualFile)
 
 
 @app.route('/emptyFolder', methods=['PUT', 'GET'])
@@ -78,11 +86,9 @@ def fcinit():
 
 def serverStart():
     app.run(host="0.0.0.0", port=2999)
-    # app.run(host='0.0.0.0',port=4434)
-    # app.run()
 
 
-t1 = threading.Thread(target=fcinit)
+# t1 = threading.Thread(target=fcinit)
 t2 = threading.Thread(target=serverStart)
-t1.start()
+# t1.start()
 t2.start()

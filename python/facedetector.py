@@ -145,7 +145,7 @@ def assignNewName(fl, frame, known_faces, known_names):
 
 def videoCapture(everyAmount, video_capture):
     process_frame = 0
-    delta = datetime.now() + timedelta(minutes=1)
+    delta = datetime.now() + timedelta(minutes=15)
     known_faces, known_names = loadImagesAndEncode(pathDetected)
     while True:
         ret, frame = video_capture.read()

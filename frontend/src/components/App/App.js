@@ -1,14 +1,15 @@
-import logo from './logo.svg';
 import './App.css';
 import {BrowserRouter,Route,Routes} from "react-router-dom"
 import Images from "./../Images/Images";
+import Menu from '../Menu/NavBar';
 function App() {
   return (
     <div className="container">
-      <h1>Menu</h1>
+      {Menu()}
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Images/>}/>    
+          <Route path='/dashboard' element={<Images/>}/>    
         </Routes>
       </BrowserRouter>
     </div>
