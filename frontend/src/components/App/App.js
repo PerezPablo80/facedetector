@@ -1,9 +1,23 @@
-import logo from './logo.svg';
 import './App.css';
-
+import {BrowserRouter,Route,Routes} from "react-router-dom"
+import Images from "./../Images/Images";
+import Menu from '../Menu/NavBar';
 function App() {
   return (
-    <div className="App">
+    <div className="container">
+      {Menu()}
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<Images/>}/>    
+          <Route path='/dashboard' element={<Images/>}/>    
+        </Routes>
+      </BrowserRouter>
+    </div>
+  );
+}
+
+/**
+  <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -19,7 +33,6 @@ function App() {
         </a>
       </header>
     </div>
-  );
-}
+ */
 
 export default App;

@@ -113,7 +113,7 @@ def sendImage(filename):
 def saveImage(frame, known_faces, known_names):
     ext = '.png'
     now = dt.datetime.now()
-    aux = now.strftime("%Y%m%d%H%M%S")
+    aux = "aa_"+now.strftime("%Y%m%d%H%M%S")
     if not checkDetection(frame, known_faces, known_names):
         print("Guardo imagen")
         cv2.imwrite(f'{pathQuery}/{aux}{ext}', frame)
@@ -145,7 +145,7 @@ def assignNewName(fl, frame, known_faces, known_names):
 
 def videoCapture(everyAmount, video_capture):
     process_frame = 0
-    delta = datetime.now() + timedelta(minutes=1)
+    delta = datetime.now() + timedelta(minutes=15)
     known_faces, known_names = loadImagesAndEncode(pathDetected)
     while True:
         ret, frame = video_capture.read()
