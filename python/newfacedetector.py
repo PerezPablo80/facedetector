@@ -15,6 +15,7 @@ pathQuery = os.getenv("QUERY_IMAGES")
 pathDetected = os.getenv("DETECTED_IMAGES")
 cascadeDetector = os.getenv("FACE_CASCADE_DETECTOR")
 savedImages = []
+quit = False
 
 # Load images from path and encode facenames and face encoding
 
@@ -62,10 +63,27 @@ def checkDetection(frame, known_face_encoding, known_face_names):
                     first_match_index = -1
     return False
 
+
+def bringFace(face_encoding, k_face_encoding, k_face_names=False):
+    found = False
+    name = "unknown"
+    matches = face_recognition.compare_faces(k_face_encoding, face_encoding)
+    face_distances = face_recognition.face_distance(
+        k_face_encoding, face_encoding)
+    try:
+        first_index_match = matches.index(True)
+        if k_face_names != False:
+            name = k_face_names[first_index_match]
+            found = True
+        elif first_index_match >= 0:
+            found = True
+    except:
+        first_index_match = -1
+    return found, name, face_encoding, k_face_encoding
 # detect face and put name on it
 
 
-def detectFace(frame, known_face_encoding, known_face_names):
+def detectFace(frame, known_face_encoding, known_face_names, unknown_face_encoding):
     # resize for better performance
     small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
     # convert BGR color (from openCV) to RGB color (for face_recognition)
@@ -77,19 +95,19 @@ def detectFace(frame, known_face_encoding, known_face_names):
             rgb_small_frame, face_locations)
         face_names = []
         for face_encoding in face_encodings:
-            # check for matches
-            matches = face_recognition.compare_faces(
-                known_face_encoding, face_encoding)
-            name = "unknown"
-            face_distances = face_recognition.face_distance(
-                known_face_encoding, face_encoding)
-            if len(matches) > 0:
-                try:
-                    first_match_index = matches.index(True)
-                    name = known_face_names[first_match_index]
-                except:
-                    first_match_index = -1
+            found, name, face_encoding, known_face_encoding = bringFace(
+                face_encoding, known_face_encoding, known_face_names)
+            if not found:
+                found, name, face_encoding, unknown_face_encoding = bringFace(
+                    face_encoding, unknown_face_encoding)
+                if not found:
+                    img = saveUnknownImage(frame)
+                    imgCur = face_recognition.load_image_file(img)
+                    img_encoding = face_recognition.face_encodings(imgCur)
+                    if len(img_encoding) > 0:
+                        unknown_face_encoding.append(img_encoding[0])
             face_names.append(name)
+            # Not really necesary here, maybe but not necesary.
             for (top, right, bottom, left), name in zip(face_locations, face_names):
                 top *= 4
                 bottom *= 4
@@ -100,6 +118,7 @@ def detectFace(frame, known_face_encoding, known_face_names):
                 cv2.putText(frame, name, (left+6, bottom-6),
                             font, 1.0, (255, 255, 255), 1)
     cv2.imshow("Video", frame)
+    return known_face_encoding, known_face_names, unknown_face_encoding
 
 # send image to a server
 
@@ -117,6 +136,14 @@ def sendImage(filename):
         print("send image exception")
         print(e)
 
+
+# Save image on queryPath
+def saveUnknownImage(frame):
+    ext = '.png'
+    now = dt.datetime.now()
+    aux = "aa_"+now.strftime("%Y%m%d%H%M%S")
+    cv2.imwrite(f'{pathQuery}/{aux}{ext}', frame)
+    return pathQuery+"/"+aux+ext
 # Save image on queryPath
 
 
@@ -152,33 +179,61 @@ def assignNewName(fl, frame, known_faces, known_names):
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
         cv2.imshow('Video', frame)
 
+# everyAmount is the amount of frames to skip
+# delta is the time in minutes to reload known_faces and names
+# path is the path where the images with known faces are
 
-def videoCapture(everyAmount, video_capture):
+
+def videoCapture(everyAmount, video_capture, delta, knownPath, unknownPath):
     process_frame = 0
-    delta = datetime.now() + timedelta(minutes=15)
-    known_faces, known_names = loadImagesAndEncode(pathDetected)
+    delta = datetime.now() + timedelta(minutes=int(delta))
+    known_face_encoding, known_face_names = loadImagesAndEncode(knownPath)
+    unknown_face_encoding, unknown_face_names = loadImagesAndEncode(
+        unknownPath)
     while True:
         ret, frame = video_capture.read()
         clearFrame = frame
         process_frame += 1
         if process_frame > everyAmount:
             process_frame = 0
-            detectFace(frame, known_faces, known_names)
+            known_face_encoding, known_face_names, unknown_face_encoding = detectFace(
+                frame, known_face_encoding, known_face_names, unknown_face_encoding)
             if datetime.now() > delta:
                 # proceso las caras de nuevo.
-                known_faces, known_names = loadImagesAndEncode(pathDetected)
+                known_face_encoding, known_face_names = loadImagesAndEncode(
+                    knownPath)
+                unknown_face_encoding, unknown_face_names = loadImagesAndEncode(
+                    unknownPath)
 
         key = cv2.waitKey(1) & 0xFF  # saca la tecla digitada.
         if key == ord('s'):
-            saveImage(clearFrame, known_faces, known_names)
+            saveImage(clearFrame, known_face_encoding, known_face_names)
         if key == ord('q'):
             break
+        if quit == True:
+            break
+
+# Function to quit system externally
+
+
+def quit():
+    quit: True
 
 
 def init():
-    video_capture = cv2.VideoCapture(0)
-    detector = cv2.CascadeClassifier(cascadeDetector)
+    camInput = int(os.getenv("CAMERA_INPUT"))
+    delta = int(os.getenv("DELTA__MINUTES"))
     checkEveryNFrames = int(os.getenv("CHECK_EVERY_N_FRAMES"))
-    videoCapture(checkEveryNFrames, video_capture)
+    # start camera input
+    video_capture = cv2.VideoCapture(camInput)
+    # set detection for faces
+    detector = cv2.CascadeClassifier(cascadeDetector)
+    # start grabbing images
+    videoCapture(checkEveryNFrames, video_capture,
+                 delta, pathDetected, pathQuery)
+    # release camera and close everything
     video_capture.release()
     cv2.destroyAllWindows()
+
+
+init()
