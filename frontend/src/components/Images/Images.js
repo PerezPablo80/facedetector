@@ -30,7 +30,6 @@ class Image extends React.Component{
         if(tip.length===0)
             tip=this.state.typeOfData
         url=url+'file/'+tip;
-        console.log(url)
         axios.get(url).then((res)=>{
             console.log(res.data);
             this.setState({

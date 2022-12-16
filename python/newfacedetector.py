@@ -236,4 +236,4 @@ def init():
     cv2.destroyAllWindows()
 
 
-init()
+# init()
