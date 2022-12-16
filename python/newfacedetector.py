@@ -11,9 +11,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # import images:
-pathQuery = os.getenv("QUERY_IMAGES")
-pathDetected = os.getenv("DETECTED_IMAGES")
-cascadeDetector = os.getenv("FACE_CASCADE_DETECTOR")
+pathQuery = os.getenv("QUERY_IMAGES", default='ImagesQuery')
+pathDetected = os.getenv("DETECTED_IMAGES", default='ImagesDetected')
+cascadeDetector = os.getenv("FACE_CASCADE_DETECTOR",
+                            default="haarcascade_frontalface_default.xml")
 savedImages = []
 quit = False
 
@@ -124,7 +125,7 @@ def detectFace(frame, known_face_encoding, known_face_names, unknown_face_encodi
 
 def sendImage(filename):
     # send file
-    serverURL = os.getenv("SERVER_URL")
+    serverURL = os.getenv("SERVER_URL", default='http://localhost:2999/')
     partial = "file"
     url = serverURL+partial
     file = pathQuery+'/'+filename
@@ -220,9 +221,9 @@ def quit():
 
 
 def init():
-    camInput = int(os.getenv("CAMERA_INPUT"))
-    delta = int(os.getenv("DELTA__MINUTES"))
-    checkEveryNFrames = int(os.getenv("CHECK_EVERY_N_FRAMES"))
+    camInput = int(os.getenv("CAMERA_INPUT", default=0))
+    delta = int(os.getenv("DELTA__MINUTES", default=10))
+    checkEveryNFrames = int(os.getenv("CHECK_EVERY_N_FRAMES", default=50))
     # start camera input
     video_capture = cv2.VideoCapture(camInput)
     # set detection for faces
