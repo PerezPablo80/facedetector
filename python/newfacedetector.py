@@ -68,8 +68,7 @@ def bringFace(face_encoding, k_face_encoding, k_face_names=False):
     found = False
     name = "unknown"
     matches = face_recognition.compare_faces(k_face_encoding, face_encoding)
-    face_distances = face_recognition.face_distance(
-        k_face_encoding, face_encoding)
+    # face_distances = face_recognition.face_distance(k_face_encoding, face_encoding)
     try:
         first_index_match = matches.index(True)
         if k_face_names != False:
