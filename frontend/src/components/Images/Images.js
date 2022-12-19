@@ -24,23 +24,30 @@ class Image extends React.Component{
     }
     componentDidMount(){
         this.loadData()
+        setInterval(()=>{
+            this.loadData()
+        },1500)
     }
     loadData(tip=""){
         let url=process.env.REACT_APP_SERVER_PYTHON||'http://192.168.1.111:2999/';
         if(tip.length===0)
             tip=this.state.typeOfData
         url=url+'file/'+tip;
-        console.log(url)
         axios.get(url).then((res)=>{
-            console.log(res.data);
-            this.setState({
-                images:res.data.images,
-                hasData:true
-            })
+            //Update only if necessary
+            if(this.state.typeOfData!==tip||this.state.images.length!==res.data.images.length){
+                this.setState({
+                    images:res.data.images,
+                    hasData:true
+                })
+            }
         }).catch((e)=>{
             console.log('ERROR did mount::',e)
         })
     }
+    // clearUpdatables(){
+
+    // }
     updateImage(name){
         let updatables=this.state.updatables;
         let val=updatables[name];
@@ -49,7 +56,11 @@ class Image extends React.Component{
         val=val+"."+name.split(".")[1];
         let body={previousName:name,actualName:val};
         axios.put(url,body).then((res)=>{
-            console.log(res.data);
+            if(res.data.status==='true'){
+                this.loadData()
+                // this.clearUpdatables()
+            } 
+            this.setState({status:res.data.status,message:res.data.message})
             
         }).catch((e)=>{
             console.log('ERROR on update::',e)
@@ -97,8 +108,7 @@ class Image extends React.Component{
         let val=this.state.radioButton;
         val=!val;
         let tod='Desconocidos'
-        if(val){
-            
+        if(val){        
             tod='Conocidos'
         }else{
         }
@@ -111,15 +121,25 @@ class Image extends React.Component{
             <Form.Check type="switch" label={this.state.typeOfData} onChange={this.toggleChange}/>      
         )
     }
+    message(){
+        if(this.state.status==='true'&&this.state.message.length>0){
+            return <div><br/><label style={{color:'blue'}}>{this.state.message}</label></div>
+        }else{
+            if(this.state.message.length==0){
+                return <div><br/><label style={{color:'black'}}>{this.state.message}</label></div>
+            }else{
+                return <div><br/><label style={{color:'red'}}>{this.state.message}</label></div>
+            }
+        }
+    }
     render(){
         return (<div className="container">
             {this.toggle()}
+            {this.message()}
         <Row md={2} sm={1} lg={3} xl={4} style={{padding:"5px"}}>
         {this.state.hasData?this.imageCards(): <h1>Cargando</h1>}
         </Row>
-    </div>) 
-        
-        
+    </div>)     
     }
 }
 export default Image;

@@ -2,7 +2,7 @@ import os
 import threading
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, send_file
-import facedetector
+import newfacedetector as facedetector
 from flask_cors import CORS
 import file_handler
 load_dotenv()
@@ -10,6 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app)
+app.config['CORS_HEADERS'] = 'application/json'
 previousFolder = os.getenv("QUERY_IMAGES")
 actualFolder = os.getenv("DETECTED_IMAGES")
 
@@ -80,7 +81,7 @@ def folder():
 #         return {"status": "false", "message": "actualizacion incorrecta"}
 
 
-def fcinit():
+def facedetector_init():
     facedetector.init()
 
 
@@ -88,7 +89,7 @@ def serverStart():
     app.run(host="0.0.0.0", port=2999)
 
 
-# t1 = threading.Thread(target=fcinit)
-t2 = threading.Thread(target=serverStart)
-# t1.start()
+t1 = threading.Thread(target=serverStart)
+t2 = threading.Thread(target=facedetector_init)
+t1.start()
 t2.start()
