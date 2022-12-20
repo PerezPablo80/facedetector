@@ -179,6 +179,16 @@ def assignNewName(fl, frame, known_faces, known_names):
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
         cv2.imshow('Video', frame)
 
+# check if image is not blurry, if value greater than 370 blurr is small
+
+
+def blurryDetection(frame):
+    grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    lap = cv2.Laplacian(grey, cv2.CV_64F).var()
+    if float(lap) > 430:
+        # print("Lap: ", lap)
+        return True
+    return False
 # everyAmount is the amount of frames to skip
 # delta is the time in minutes to reload known_faces and names
 # path is the path where the images with known faces are
@@ -195,16 +205,17 @@ def videoCapture(everyAmount, video_capture, delta, knownPath, unknownPath):
         clearFrame = frame
         process_frame += 1
         if process_frame > everyAmount:
-            process_frame = 0
-            known_face_encoding, known_face_names, unknown_face_encoding = detectFace(
-                frame, known_face_encoding, known_face_names, unknown_face_encoding)
-            if datetime.now() > delta:
-                # proceso las caras de nuevo.
-                known_face_encoding, known_face_names = loadImagesAndEncode(
-                    knownPath)
-                unknown_face_encoding, unknown_face_names = loadImagesAndEncode(
-                    unknownPath)
-
+            blurr = blurryDetection(frame)
+            if not blurr:
+                process_frame = 0
+                known_face_encoding, known_face_names, unknown_face_encoding = detectFace(
+                    frame, known_face_encoding, known_face_names, unknown_face_encoding)
+        if datetime.now() > delta:
+            # proceso las caras de nuevo.
+            known_face_encoding, known_face_names = loadImagesAndEncode(
+                knownPath)
+            unknown_face_encoding, unknown_face_names = loadImagesAndEncode(
+                unknownPath)
         key = cv2.waitKey(1) & 0xFF  # saca la tecla digitada.
         if key == ord('s'):
             saveImage(clearFrame, known_face_encoding, known_face_names)
