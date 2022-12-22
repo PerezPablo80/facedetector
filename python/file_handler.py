@@ -35,3 +35,16 @@ def update(previousName, actualName):
         return {"status": "true", "message": "actualizacion correcta"}
     except Exception as e:
         return {"status": "false", "message": "exception found", "error": e}
+
+
+def delete(fileName, previousFolder, actualFolder):
+    try:
+        if (os.path.isfile(previousFolder+'/'+fileName)):
+            os.unlink(previousFolder+'/'+fileName)
+        elif (os.path.isfile(actualFolder+'/'+fileName)):
+            os.unlink(previousFolder+'/'+fileName)
+        else:
+            return {"status": "false", "message": "Archivo no encontrado"}
+        return {"status": "true", "message": "eliminacion correcta"}
+    except Exception as e:
+        return {"status": "false", "message": "exception found", "error": e}

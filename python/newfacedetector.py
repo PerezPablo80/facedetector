@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # import images:
+# print(os.getenv("QUERY_IMAGES"))
 pathQuery = os.getenv("QUERY_IMAGES", default='ImagesQuery')
 pathDetected = os.getenv("DETECTED_IMAGES", default='ImagesDetected')
 cascadeDetector = os.getenv("FACE_CASCADE_DETECTOR",
@@ -247,4 +248,4 @@ def init():
     cv2.destroyAllWindows()
 
 
-# init()
+init()

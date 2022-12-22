@@ -26,7 +26,7 @@ class Image extends React.Component{
         this.loadData()
         setInterval(()=>{
             this.loadData()
-        },1500)
+        },3500)
     }
     loadData(tip=""){
         let url=process.env.REACT_APP_SERVER_PYTHON||'http://192.168.1.111:2999/';
@@ -66,6 +66,21 @@ class Image extends React.Component{
             console.log('ERROR on update::',e)
         })
     }
+    removeImage(name){
+        let updatables=this.state.updatables;
+        let url=process.env.REACT_APP_SERVER_PYTHON||'http://192.168.1.111:2999/';
+        url=url+'file/';
+        let body={fileName:name};
+        axios.post(url,body).then((res)=>{
+            if(res.data.status==='true'){
+                this.loadData()
+                // this.clearUpdatables()
+            } 
+            this.setState({status:res.data.status,message:res.data.message})
+        }).catch((e)=>{
+            console.log('ERROR on update::',e)
+        })
+    }
     updateData(event,name){
         let value=event.target.value;
         let updatables=this.state.updatables;
@@ -89,6 +104,7 @@ class Image extends React.Component{
                     <div key={"div_img_"+key}>
                         <Form.Control key={"input_"+key} onChange={((e)=>{this.updateData(e,name)})} type="text" id={name}></Form.Control>
                         <Button className="text-center" variant="success" onClick={()=>{this.updateImage(name)}}>Nombrar</Button>
+                        &nbsp;&nbsp;&nbsp;<Button className="text-center" variant="success" onClick={()=>{this.removeImage(name)}}>Eliminar</Button>
                     </div>
                 )
 
@@ -125,7 +141,7 @@ class Image extends React.Component{
         if(this.state.status==='true'&&this.state.message.length>0){
             return <div><br/><label style={{color:'blue'}}>{this.state.message}</label></div>
         }else{
-            if(this.state.message.length==0){
+            if(this.state.message.length===0){
                 return <div><br/><label style={{color:'black'}}>{this.state.message}</label></div>
             }else{
                 return <div><br/><label style={{color:'red'}}>{this.state.message}</label></div>
