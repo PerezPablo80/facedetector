@@ -46,11 +46,15 @@ DETECTED_IMAGES = folder
 QUERY_IMAGES = folder
 FACE_CASCADE_DETECTOR = "haarcascade_frontalface_default.xml"
 CHECK_EVERY_N_FRAMES = 10
-SERVER_URL = "http://localhost:2999/"
-PYTHON_SERVER_PORT = 2998
+SERVER_URL = "http://localhost:2999/" or the one you prefer
+PYTHON_SERVER_PORT = 2999
 REJECT_AMOUNT_OF_FRAMES = 50
 CAMERA_INPUT = 0
 DELTA_MINUTES = 20
+
+#### React
+
+REACT_APP_SERVER_PYTHON = "server:port/" same as SERVER_URL from Python env
 
 ## For starting on startup of ubuntu (different linux may vary):
 
