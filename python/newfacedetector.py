@@ -221,8 +221,12 @@ def videoCapture(everyAmount, video_capture, delta, knownPath, unknownPath):
         if key == ord('s'):
             saveImage(clearFrame, known_face_encoding, known_face_names)
         if key == ord('q'):
+            quit()
+            break
+        if key == ord('x'):
             break
         if quit == True:
+            quit()
             break
 
 # Function to quit system externally
@@ -230,6 +234,7 @@ def videoCapture(everyAmount, video_capture, delta, knownPath, unknownPath):
 
 def quit():
     quit: True
+    os.system('systemctl poweroff')
 
 
 def init():

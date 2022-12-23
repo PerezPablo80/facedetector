@@ -15,6 +15,12 @@ previousFolder = os.getenv("QUERY_IMAGES")
 actualFolder = os.getenv("DETECTED_IMAGES")
 
 
+@app.route('/shutdown', methods=['GET'])
+def quit():
+    quit: True
+    os.system('systemctl poweroff')
+    return {"Status": "true", "message": "Powering off"}
+
 @app.route('/status', methods=['GET'])
 def init():
     return {"Status": "true", "message": " all ok"}

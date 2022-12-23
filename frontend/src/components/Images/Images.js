@@ -29,7 +29,7 @@ class Image extends React.Component{
         },3500)
     }
     loadData(tip=""){
-        let url=process.env.REACT_APP_SERVER_PYTHON||'http://192.168.1.111:2999/';
+        let url=process.env.REACT_APP_SERVER_PYTHON||'http://192.168.1.155:2999/';
         if(tip.length===0)
             tip=this.state.typeOfData
         url=url+'file/'+tip;
@@ -42,6 +42,7 @@ class Image extends React.Component{
                 })
             }
         }).catch((e)=>{
+            console.log(url)
             console.log('ERROR did mount::',e)
         })
     }

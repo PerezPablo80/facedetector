@@ -65,3 +65,22 @@ Then go to start -> startup application
 Create a new startup with the route of the `script.sh`
 
 enjoy
+
+## For starting on Raspberry:
+python -V to see version of python installed
+sudo su
+curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+sudo apt install nodejs
+git clone https://github.com/facedetector
+
+pasarse a rama develop (esto ajustarlo a main)
+tomando los puntos de arriba, descargar lo necesario.
+### Para autoejecucion:
+usar el script.sh y ejecutar:
+sudo nano /etc/xdg/autostart/facedetector.desktop
+ahi escribir:
+```
+[Desktop Entry]
+Name=MyFaceDetector
+Exec=/usr/bin/bash <Ruta del script.sh>
+```

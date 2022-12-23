@@ -1,6 +1,4 @@
-cd /home/compartida/facedetector/python
+cd /home/pachi/Desktop/facedetector/python
 python3 newfacedetector.py &
-cd /home/compartida/facedetector/python
+cd /home/pachi/Desktop/facedetector/python
 python3 server.py &
-cd /home/compartida/facedetector/frontend
-npm start
