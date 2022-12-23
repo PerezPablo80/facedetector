@@ -19,14 +19,19 @@ class Image extends React.Component{
             message:"",
             status:"",
             updatables:[],
-            hasData:false
+            hasData:false,
+            interval:false
         }
     }
     componentDidMount(){
         this.loadData()
-        setInterval(()=>{
-            this.loadData()
+        let inter=setInterval(()=>{
+            if(this.state.interval)
+                clearInterval(inter)
+            else
+                this.loadData()
         },3500)
+        // this.setState({interval:false})
     }
     loadData(tip=""){
         let url=process.env.REACT_APP_SERVER_PYTHON||'http://192.168.1.155:2999/';
@@ -42,8 +47,15 @@ class Image extends React.Component{
                 })
             }
         }).catch((e)=>{
+            if(e.code==='ERR_NETWORK'){
+                console.log('pasa e.code')
+                if(!this.state.interval){
+                    this.setState({interval:true})
+                }
+                    
+            }
             console.log(url)
-            console.log('ERROR did mount::',e)
+            console.log('ERROR did mount::',e.code)
         })
     }
     // clearUpdatables(){
