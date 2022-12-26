@@ -188,7 +188,7 @@ def blurryDetection(frame):
     lap = cv2.Laplacian(grey, cv2.CV_64F).var()
     # print("LAP:",lap)
     maxBlurr= int(os.getenv("BLURR_MAX", default=400))
-    if float(lap) > 430:
+    if float(lap) > maxBlurr:
         # print("Lap: ", lap)
         return True
     return False
