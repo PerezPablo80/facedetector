@@ -182,10 +182,12 @@ def assignNewName(fl, frame, known_faces, known_names):
 
 # check if image is not blurry, if value greater than 370 blurr is small
 
-
+# On windows webcam max blurr is 70, on the Genius, Maxblurr is abobe 430
 def blurryDetection(frame):
     grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     lap = cv2.Laplacian(grey, cv2.CV_64F).var()
+    # print("LAP:",lap)
+    maxBlurr= int(os.getenv("BLURR_MAX", default=400))
     if float(lap) > 430:
         # print("Lap: ", lap)
         return True
@@ -244,7 +246,7 @@ def init():
     # start camera input
     video_capture = cv2.VideoCapture(camInput)
     # set detection for faces
-    detector = cv2.CascadeClassifier(cascadeDetector)
+    cv2.CascadeClassifier(cascadeDetector)
     # start grabbing images
     videoCapture(checkEveryNFrames, video_capture,
                  delta, pathDetected, pathQuery)

@@ -11,8 +11,9 @@ load_dotenv('/home/pachi/Desktop/facedetector/python/.env')
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'application/json'
-previousFolder = os.getenv("QUERY_IMAGES")
-actualFolder = os.getenv("DETECTED_IMAGES")
+previousFolder = os.getenv("QUERY_IMAGES","ImagesQuery")
+actualFolder = os.getenv("DETECTED_IMAGES","ImagesDetected")
+port =int(os.getenv("SERVER_PORT",2999))
 
 
 @app.route('/shutdown', methods=['GET'])
@@ -98,7 +99,7 @@ def folder():
 #     app.run(host="0.0.0.0", port=2999)
 
 # quitar esto y descomentar las dos funciones para un solo script
-app.run(host="0.0.0.0", port=2999)
+app.run(host="0.0.0.0", port=port)
 
 # t1 = threading.Thread(target=serverStart)
 # t2 = threading.Thread(target=facedetector_init)
