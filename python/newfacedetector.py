@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # import images:
+# print(os.getenv("QUERY_IMAGES"))
 pathQuery = os.getenv("QUERY_IMAGES", default='ImagesQuery')
 pathDetected = os.getenv("DETECTED_IMAGES", default='ImagesDetected')
 cascadeDetector = os.getenv("FACE_CASCADE_DETECTOR",
@@ -220,8 +221,12 @@ def videoCapture(everyAmount, video_capture, delta, knownPath, unknownPath):
         if key == ord('s'):
             saveImage(clearFrame, known_face_encoding, known_face_names)
         if key == ord('q'):
+            quit()
+            break
+        if key == ord('x'):
             break
         if quit == True:
+            quit()
             break
 
 # Function to quit system externally
@@ -229,6 +234,7 @@ def videoCapture(everyAmount, video_capture, delta, knownPath, unknownPath):
 
 def quit():
     quit: True
+    os.system('systemctl poweroff')
 
 
 def init():
@@ -247,4 +253,4 @@ def init():
     cv2.destroyAllWindows()
 
 
-# init()
+init()

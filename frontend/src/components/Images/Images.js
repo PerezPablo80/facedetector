@@ -19,17 +19,22 @@ class Image extends React.Component{
             message:"",
             status:"",
             updatables:[],
-            hasData:false
+            hasData:false,
+            interval:false
         }
     }
     componentDidMount(){
         this.loadData()
-        setInterval(()=>{
-            this.loadData()
-        },1500)
+        let inter=setInterval(()=>{
+            if(this.state.interval)
+                clearInterval(inter)
+            else
+                this.loadData()
+        },3500)
+        // this.setState({interval:false})
     }
     loadData(tip=""){
-        let url=process.env.REACT_APP_SERVER_PYTHON||'http://192.168.1.111:2999/';
+        let url=process.env.REACT_APP_SERVER_PYTHON||'http://192.168.1.155:2999/';
         if(tip.length===0)
             tip=this.state.typeOfData
         url=url+'file/'+tip;
@@ -42,7 +47,15 @@ class Image extends React.Component{
                 })
             }
         }).catch((e)=>{
-            console.log('ERROR did mount::',e)
+            if(e.code==='ERR_NETWORK'){
+                console.log('pasa e.code')
+                if(!this.state.interval){
+                    this.setState({interval:true})
+                }
+                    
+            }
+            console.log(url)
+            console.log('ERROR did mount::',e.code)
         })
     }
     // clearUpdatables(){
@@ -62,6 +75,21 @@ class Image extends React.Component{
             } 
             this.setState({status:res.data.status,message:res.data.message})
             
+        }).catch((e)=>{
+            console.log('ERROR on update::',e)
+        })
+    }
+    removeImage(name){
+        let updatables=this.state.updatables;
+        let url=process.env.REACT_APP_SERVER_PYTHON||'http://192.168.1.111:2999/';
+        url=url+'file/';
+        let body={fileName:name};
+        axios.post(url,body).then((res)=>{
+            if(res.data.status==='true'){
+                this.loadData()
+                // this.clearUpdatables()
+            } 
+            this.setState({status:res.data.status,message:res.data.message})
         }).catch((e)=>{
             console.log('ERROR on update::',e)
         })
@@ -89,6 +117,7 @@ class Image extends React.Component{
                     <div key={"div_img_"+key}>
                         <Form.Control key={"input_"+key} onChange={((e)=>{this.updateData(e,name)})} type="text" id={name}></Form.Control>
                         <Button className="text-center" variant="success" onClick={()=>{this.updateImage(name)}}>Nombrar</Button>
+                        &nbsp;&nbsp;&nbsp;<Button className="text-center" variant="success" onClick={()=>{this.removeImage(name)}}>Eliminar</Button>
                     </div>
                 )
 
@@ -125,7 +154,7 @@ class Image extends React.Component{
         if(this.state.status==='true'&&this.state.message.length>0){
             return <div><br/><label style={{color:'blue'}}>{this.state.message}</label></div>
         }else{
-            if(this.state.message.length==0){
+            if(this.state.message.length===0){
                 return <div><br/><label style={{color:'black'}}>{this.state.message}</label></div>
             }else{
                 return <div><br/><label style={{color:'red'}}>{this.state.message}</label></div>
