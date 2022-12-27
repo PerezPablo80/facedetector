@@ -18,7 +18,7 @@ cascadeDetector = os.getenv("FACE_CASCADE_DETECTOR",
                             default="haarcascade_frontalface_default.xml")
 savedImages = []
 quit = False
-maxBlurr=300
+maxBlurr = 300
 # Load images from path and encode facenames and face encoding
 
 
@@ -183,18 +183,32 @@ def assignNewName(fl, frame, known_faces, known_names):
 # check if image is not blurry, if value greater than 370 blurr is small
 
 # On windows webcam max blurr is 70, on the Genius, Maxblurr is abobe 430
+
+
 def blurryDetection(frame):
     grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     lap = cv2.Laplacian(grey, cv2.CV_64F).var()
-    #print("LAP:",lap)
+    # print("LAP:",lap)
     # maxBlurr= int(os.getenv("BLURR_MAX", default=300))
     if float(lap) > maxBlurr:
-        print("Lap: ", lap)
+        # print("Lap: ", lap)
         return True
     return False
 # everyAmount is the amount of frames to skip
 # delta is the time in minutes to reload known_faces and names
 # path is the path where the images with known faces are
+
+
+def checkBlurr(video_capture):
+    arr = []
+    global maxBlurr
+    for i in range(0, 400):
+        ret, frame = video_capture.read()
+        grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        lap = cv2.Laplacian(grey, cv2.CV_64F).var()
+        arr.append(lap)
+    narr = np.array(arr)
+    maxBlurr = int(narr.max()*1.1)
 
 
 def videoCapture(everyAmount, video_capture, delta, knownPath, unknownPath):
@@ -247,6 +261,8 @@ def init():
     video_capture = cv2.VideoCapture(camInput)
     # set detection for faces
     cv2.CascadeClassifier(cascadeDetector)
+    checkBlurr(video_capture)
+    print("blurr is {}".format(maxBlurr))
     # start grabbing images
     videoCapture(checkEveryNFrames, video_capture,
                  delta, pathDetected, pathQuery)
