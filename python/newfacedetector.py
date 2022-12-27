@@ -18,7 +18,7 @@ cascadeDetector = os.getenv("FACE_CASCADE_DETECTOR",
                             default="haarcascade_frontalface_default.xml")
 savedImages = []
 quit = False
-
+maxBlurr=300
 # Load images from path and encode facenames and face encoding
 
 
@@ -186,10 +186,10 @@ def assignNewName(fl, frame, known_faces, known_names):
 def blurryDetection(frame):
     grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     lap = cv2.Laplacian(grey, cv2.CV_64F).var()
-    # print("LAP:",lap)
-    maxBlurr= int(os.getenv("BLURR_MAX", default=400))
-    if float(lap) > 430:
-        # print("Lap: ", lap)
+    #print("LAP:",lap)
+    # maxBlurr= int(os.getenv("BLURR_MAX", default=300))
+    if float(lap) > maxBlurr:
+        print("Lap: ", lap)
         return True
     return False
 # everyAmount is the amount of frames to skip
